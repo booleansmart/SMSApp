@@ -1,0 +1,92 @@
+<html>
+<head>
+<title>EncDecr.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #999999; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(0,128,0); font-weight: bold; }
+.s3 { color: rgb(0,0,255); }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+EncDecr.java</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">package </span><span class="s1">com.androstock.smsapp; 
+ 
+</span><span class="s0">import </span><span class="s1">android.util.Base64; 
+ 
+</span><span class="s0">import </span><span class="s1">java.security.MessageDigest; 
+</span><span class="s0">import </span><span class="s1">java.security.SecureRandom; 
+</span><span class="s0">import </span><span class="s1">java.util.Random; 
+ 
+</span><span class="s0">import </span><span class="s1">javax.crypto.Cipher; 
+</span><span class="s0">import </span><span class="s1">javax.crypto.spec.SecretKeySpec; 
+ 
+</span><span class="s0">public class </span><span class="s1">EncDecr { 
+    String AES = </span><span class="s2">&quot;AES&quot;</span><span class="s1">; 
+ 
+    </span><span class="s0">public </span><span class="s1">EncDecr(){ 
+ 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String[] decrypt(String outputString, String password) </span><span class="s0">throws </span><span class="s1">Exception { 
+        String[] uhu = </span><span class="s0">new </span><span class="s1">String[</span><span class="s3">2</span><span class="s1">]; 
+        SecretKeySpec key = generateKey(password); 
+        Cipher c = Cipher.getInstance(AES); 
+        c.init(Cipher.DECRYPT_MODE, key); 
+        Long tsLong = System.nanoTime(); 
+        </span><span class="s0">byte</span><span class="s1">[] decodedValue = Base64.decode(outputString, Base64.DEFAULT); 
+        </span><span class="s0">byte</span><span class="s1">[] decValue = c.doFinal(decodedValue); 
+        String decryptedValue = </span><span class="s0">new </span><span class="s1">String(decValue); 
+        Long tsLong1 = System.nanoTime(); 
+        Long time = tsLong1-tsLong; 
+        uhu[</span><span class="s3">0</span><span class="s1">] = decryptedValue; 
+        uhu[</span><span class="s3">1</span><span class="s1">] = time.toString(); 
+        </span><span class="s0">return </span><span class="s1">uhu; 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">String[] encrypt(String data, String password) </span><span class="s0">throws </span><span class="s1">Exception{ 
+        String[] uhu = </span><span class="s0">new </span><span class="s1">String[</span><span class="s3">2</span><span class="s1">]; 
+        SecretKeySpec key = generateKey(password); 
+        Cipher c = Cipher.getInstance(AES); 
+        c.init(Cipher.ENCRYPT_MODE,key); 
+        Long tsLong = System.nanoTime(); 
+        </span><span class="s0">byte</span><span class="s1">[] enVal = c.doFinal(data.getBytes()); 
+        String encryptedValue = Base64.encodeToString(enVal, Base64.DEFAULT); 
+        Long tsLong1 = System.nanoTime(); 
+        Long time = tsLong1-tsLong; 
+        uhu[</span><span class="s3">0</span><span class="s1">] = encryptedValue; 
+        uhu[</span><span class="s3">1</span><span class="s1">] = time.toString(); 
+        </span><span class="s0">return </span><span class="s1">uhu; 
+    } 
+ 
+    </span><span class="s0">private </span><span class="s1">SecretKeySpec generateKey(String password) </span><span class="s0">throws </span><span class="s1">Exception { 
+        </span><span class="s0">final </span><span class="s1">MessageDigest digest = MessageDigest.getInstance(</span><span class="s2">&quot;SHA-256&quot;</span><span class="s1">); 
+        </span><span class="s0">byte</span><span class="s1">[] bytes = password.getBytes(</span><span class="s2">&quot;UTF-8&quot;</span><span class="s1">); 
+        digest.update(bytes, </span><span class="s3">0</span><span class="s1">, bytes.length); 
+        </span><span class="s0">byte</span><span class="s1">[] key = digest.digest(); 
+        SecretKeySpec secretKeySpec = </span><span class="s0">new </span><span class="s1">SecretKeySpec(key, </span><span class="s2">&quot;AES&quot;</span><span class="s1">); 
+        </span><span class="s0">return </span><span class="s1">secretKeySpec; 
+    } 
+ 
+ 
+    </span><span class="s0">public static </span><span class="s1">String randomKey( </span><span class="s0">int </span><span class="s1">maxlength){ 
+        </span><span class="s0">final </span><span class="s1">String AB = </span><span class="s2">&quot;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+=&quot;</span><span class="s1">; 
+        SecureRandom rnd = </span><span class="s0">new </span><span class="s1">SecureRandom(); 
+        StringBuilder sb = </span><span class="s0">new </span><span class="s1">StringBuilder(maxlength); 
+        </span><span class="s0">for</span><span class="s1">( </span><span class="s0">int </span><span class="s1">i = </span><span class="s3">0</span><span class="s1">; i &lt; maxlength; i++ ) 
+            sb.append( AB.charAt( rnd.nextInt(AB.length()) ) ); 
+        </span><span class="s0">return </span><span class="s1">sb.toString(); 
+    } 
+ 
+ 
+} 
+</span></pre>
+</body>
+</html>
